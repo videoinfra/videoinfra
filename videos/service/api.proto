@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "videoinfra/videos/service";
+
+service VideoAPI {
+    rpc UploadVideo(UploadVideoRequest) returns (UploadVideoResponse) {}
+}
+
+message UploadVideoRequest {
+    string title = 1;
+}
+
+message UploadVideoResponse {
+
+}
+
