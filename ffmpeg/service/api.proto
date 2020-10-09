@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "videoinfra/ffmpeg/service";
+
+service FfmpegAPI {
+    rpc GeneratePlayback(GeneratePlaybackRequest) returns (GeneratePlaybackResponse) {}
+}
+
+message GeneratePlaybackRequest {
+    string video_path = 1;
+}
+
+message GeneratePlaybackResponse {
+	string original_video_path = 1;
+	string m3u8_playback_path = 2;
+}
