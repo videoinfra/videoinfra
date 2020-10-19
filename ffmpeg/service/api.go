@@ -35,8 +35,7 @@ func String(length int) string {
   return StringWithCharset(length, charset)
 }
 
-// TODO(yilkal) rename this rpc. I am sure that there are many better ones out there.
-func (s* FfmpegAPIServerInterface) GenerateCallback(ctx context.Context, request *pb.GeneratePlaybackRequest) (*pb.GeneratePlaybackResponse, error) {
+func (s* FfmpegAPIServerInterface) GeneratePlayback(ctx context.Context, request *pb.GeneratePlaybackRequest) (*pb.GeneratePlaybackResponse, error) {
 	// First create a random string.
 	generated_path_name := String(10)
 
