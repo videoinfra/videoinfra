@@ -1,13 +1,13 @@
 {{template "base" .}}
 
-{{define "title"}}Video #{{.VideoId}}{{end}}
+{{define "title"}}Video #{{.Video.VideoId}}{{end}}
 
 {{define "main"}}
     <div class='snippet'>
     <div class='metadata'>
-        <strong>{{.Title}}</strong>
-        <span>#{{.VideoId}}</span>
-    </div> <pre><code>{{.Filepath}}</code></pre> <div class='metadata'>
-        <time>Created: {{.CreateTimestamp}}</time>
-        <time>Updated: {{.UpdateTimestamp}}</time> </div>
+        <strong>{{.Video.Title}}</strong>
+        <span>#{{.Video.VideoId}}</span>
+    </div> <pre><code>{{.Video.Filepath}}</code></pre> <div class='metadata'>
+        <time>Created: {{humanDate .Video.CreateTimestamp}}</time>
+        <time>Updated: {{humanDate .Video.UpdateTimestamp}}</time> </div>
 </div> {{end}}

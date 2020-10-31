@@ -10,10 +10,11 @@ import (
 	"net"
 	"os"
 	ffmpeg "videoinfra/ffmpeg/service"
+	videoApi "videoinfra/videos/service"
 )
 
-func InitServer(videosDbHandle *sql.DB, client ffmpeg.FfmpegAPIClient) *VideoAPIServerImpl {
-	return &VideoAPIServerImpl{DbContext: VideoDBContext{VideosDBHandle: videosDbHandle}, FfmpegClient: client}
+func InitServer(videosDbHandle *sql.DB, client ffmpeg.FfmpegAPIClient) *videoApi.VideoAPIServerImpl {
+	return &videoApi.VideoAPIServerImpl{DbContext: videoApi.VideoDBContext{VideosDBHandle: videosDbHandle}, FfmpegClient: client}
 }
 
 var (
@@ -57,6 +58,6 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	infoLog.Println("Starting server on port", *port)
 
-	RegisterVideoAPIServer(grpcServer, InitServer(db, ffmpegClient))
+	videoApi.RegisterVideoAPIServer(grpcServer, InitServer(db, ffmpegClient))
 	grpcServer.Serve(lis)
 }

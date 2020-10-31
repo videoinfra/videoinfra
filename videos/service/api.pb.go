@@ -9,6 +9,7 @@ package service
 import (
 	context "context"
 	proto "github.com/golang/protobuf/proto"
+	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -75,18 +76,65 @@ func (VideoState) EnumDescriptor() ([]byte, []int) {
 	return file_api_proto_rawDescGZIP(), []int{0}
 }
 
+type PlaybackPolicy int32
+
+const (
+	PlaybackPolicy_PUBLIC PlaybackPolicy = 0
+	PlaybackPolicy_SIGNED PlaybackPolicy = 1
+)
+
+// Enum value maps for PlaybackPolicy.
+var (
+	PlaybackPolicy_name = map[int32]string{
+		0: "PUBLIC",
+		1: "SIGNED",
+	}
+	PlaybackPolicy_value = map[string]int32{
+		"PUBLIC": 0,
+		"SIGNED": 1,
+	}
+)
+
+func (x PlaybackPolicy) Enum() *PlaybackPolicy {
+	p := new(PlaybackPolicy)
+	*p = x
+	return p
+}
+
+func (x PlaybackPolicy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PlaybackPolicy) Descriptor() protoreflect.EnumDescriptor {
+	return file_api_proto_enumTypes[1].Descriptor()
+}
+
+func (PlaybackPolicy) Type() protoreflect.EnumType {
+	return &file_api_proto_enumTypes[1]
+}
+
+func (x PlaybackPolicy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PlaybackPolicy.Descriptor instead.
+func (PlaybackPolicy) EnumDescriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{1}
+}
+
 type Video struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	VideoId         string     `protobuf:"bytes,1,opt,name=video_id,json=videoId,proto3" json:"video_id,omitempty"`
-	Title           string     `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	AccountId       int64      `protobuf:"varint,3,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	VideoState      VideoState `protobuf:"varint,4,opt,name=video_state,json=videoState,proto3,enum=VideoState" json:"video_state,omitempty"`
-	Filepath        string     `protobuf:"bytes,5,opt,name=filepath,proto3" json:"filepath,omitempty"`
-	CreateTimestamp int64      `protobuf:"varint,6,opt,name=create_timestamp,json=createTimestamp,proto3" json:"create_timestamp,omitempty"`
-	UpdateTimestamp int64      `protobuf:"varint,7,opt,name=update_timestamp,json=updateTimestamp,proto3" json:"update_timestamp,omitempty"`
+	VideoId         string               `protobuf:"bytes,1,opt,name=video_id,json=videoId,proto3" json:"video_id,omitempty"`
+	Title           string               `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	AccountId       int64                `protobuf:"varint,3,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	VideoState      VideoState           `protobuf:"varint,4,opt,name=video_state,json=videoState,proto3,enum=VideoState" json:"video_state,omitempty"`
+	VideoProperties *VideoProperties     `protobuf:"bytes,5,opt,name=video_properties,json=videoProperties,proto3" json:"video_properties,omitempty"`
+	Filepath        string               `protobuf:"bytes,6,opt,name=filepath,proto3" json:"filepath,omitempty"`
+	CreateTimestamp *timestamp.Timestamp `protobuf:"bytes,7,opt,name=create_timestamp,json=createTimestamp,proto3" json:"create_timestamp,omitempty"`
+	UpdateTimestamp *timestamp.Timestamp `protobuf:"bytes,8,opt,name=update_timestamp,json=updateTimestamp,proto3" json:"update_timestamp,omitempty"`
 }
 
 func (x *Video) Reset() {
@@ -149,6 +197,13 @@ func (x *Video) GetVideoState() VideoState {
 	return VideoState_PROCESSING
 }
 
+func (x *Video) GetVideoProperties() *VideoProperties {
+	if x != nil {
+		return x.VideoProperties
+	}
+	return nil
+}
+
 func (x *Video) GetFilepath() string {
 	if x != nil {
 		return x.Filepath
@@ -156,30 +211,32 @@ func (x *Video) GetFilepath() string {
 	return ""
 }
 
-func (x *Video) GetCreateTimestamp() int64 {
+func (x *Video) GetCreateTimestamp() *timestamp.Timestamp {
 	if x != nil {
 		return x.CreateTimestamp
 	}
-	return 0
+	return nil
 }
 
-func (x *Video) GetUpdateTimestamp() int64 {
+func (x *Video) GetUpdateTimestamp() *timestamp.Timestamp {
 	if x != nil {
 		return x.UpdateTimestamp
 	}
-	return 0
+	return nil
 }
 
-type UploadVideoRequest struct {
+type Playback struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Title string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	PlaybackId string         `protobuf:"bytes,1,opt,name=playback_id,json=playbackId,proto3" json:"playback_id,omitempty"`
+	VideoId    string         `protobuf:"bytes,2,opt,name=video_id,json=videoId,proto3" json:"video_id,omitempty"`
+	Policy     PlaybackPolicy `protobuf:"varint,3,opt,name=policy,proto3,enum=PlaybackPolicy" json:"policy,omitempty"`
 }
 
-func (x *UploadVideoRequest) Reset() {
-	*x = UploadVideoRequest{}
+func (x *Playback) Reset() {
+	*x = Playback{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -187,13 +244,13 @@ func (x *UploadVideoRequest) Reset() {
 	}
 }
 
-func (x *UploadVideoRequest) String() string {
+func (x *Playback) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UploadVideoRequest) ProtoMessage() {}
+func (*Playback) ProtoMessage() {}
 
-func (x *UploadVideoRequest) ProtoReflect() protoreflect.Message {
+func (x *Playback) ProtoReflect() protoreflect.Message {
 	mi := &file_api_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -205,26 +262,48 @@ func (x *UploadVideoRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UploadVideoRequest.ProtoReflect.Descriptor instead.
-func (*UploadVideoRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use Playback.ProtoReflect.Descriptor instead.
+func (*Playback) Descriptor() ([]byte, []int) {
 	return file_api_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *UploadVideoRequest) GetTitle() string {
+func (x *Playback) GetPlaybackId() string {
 	if x != nil {
-		return x.Title
+		return x.PlaybackId
 	}
 	return ""
 }
 
-type UploadVideoResponse struct {
+func (x *Playback) GetVideoId() string {
+	if x != nil {
+		return x.VideoId
+	}
+	return ""
+}
+
+func (x *Playback) GetPolicy() PlaybackPolicy {
+	if x != nil {
+		return x.Policy
+	}
+	return PlaybackPolicy_PUBLIC
+}
+
+type Account struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	AccountId       int64                `protobuf:"varint,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	FirstName       string               `protobuf:"bytes,2,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName        string               `protobuf:"bytes,3,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	Email           string               `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
+	HashedPassword  []byte               `protobuf:"bytes,5,opt,name=hashed_password,json=hashedPassword,proto3" json:"hashed_password,omitempty"`
+	CreateTimestamp *timestamp.Timestamp `protobuf:"bytes,6,opt,name=create_timestamp,json=createTimestamp,proto3" json:"create_timestamp,omitempty"`
+	Active          bool                 `protobuf:"varint,7,opt,name=active,proto3" json:"active,omitempty"`
 }
 
-func (x *UploadVideoResponse) Reset() {
-	*x = UploadVideoResponse{}
+func (x *Account) Reset() {
+	*x = Account{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -232,13 +311,13 @@ func (x *UploadVideoResponse) Reset() {
 	}
 }
 
-func (x *UploadVideoResponse) String() string {
+func (x *Account) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UploadVideoResponse) ProtoMessage() {}
+func (*Account) ProtoMessage() {}
 
-func (x *UploadVideoResponse) ProtoReflect() protoreflect.Message {
+func (x *Account) ProtoReflect() protoreflect.Message {
 	mi := &file_api_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -250,9 +329,231 @@ func (x *UploadVideoResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UploadVideoResponse.ProtoReflect.Descriptor instead.
-func (*UploadVideoResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use Account.ProtoReflect.Descriptor instead.
+func (*Account) Descriptor() ([]byte, []int) {
 	return file_api_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Account) GetAccountId() int64 {
+	if x != nil {
+		return x.AccountId
+	}
+	return 0
+}
+
+func (x *Account) GetFirstName() string {
+	if x != nil {
+		return x.FirstName
+	}
+	return ""
+}
+
+func (x *Account) GetLastName() string {
+	if x != nil {
+		return x.LastName
+	}
+	return ""
+}
+
+func (x *Account) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *Account) GetHashedPassword() []byte {
+	if x != nil {
+		return x.HashedPassword
+	}
+	return nil
+}
+
+func (x *Account) GetCreateTimestamp() *timestamp.Timestamp {
+	if x != nil {
+		return x.CreateTimestamp
+	}
+	return nil
+}
+
+func (x *Account) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
+type VideoProperties struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	MaxWidth     int64 `protobuf:"varint,1,opt,name=max_width,json=maxWidth,proto3" json:"max_width,omitempty"`
+	MaxHeight    int64 `protobuf:"varint,2,opt,name=max_height,json=maxHeight,proto3" json:"max_height,omitempty"`
+	MaxFrameRate int64 `protobuf:"varint,3,opt,name=max_frame_rate,json=maxFrameRate,proto3" json:"max_frame_rate,omitempty"`
+	DurationMs   int64 `protobuf:"varint,4,opt,name=duration_ms,json=durationMs,proto3" json:"duration_ms,omitempty"`
+}
+
+func (x *VideoProperties) Reset() {
+	*x = VideoProperties{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *VideoProperties) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VideoProperties) ProtoMessage() {}
+
+func (x *VideoProperties) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VideoProperties.ProtoReflect.Descriptor instead.
+func (*VideoProperties) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *VideoProperties) GetMaxWidth() int64 {
+	if x != nil {
+		return x.MaxWidth
+	}
+	return 0
+}
+
+func (x *VideoProperties) GetMaxHeight() int64 {
+	if x != nil {
+		return x.MaxHeight
+	}
+	return 0
+}
+
+func (x *VideoProperties) GetMaxFrameRate() int64 {
+	if x != nil {
+		return x.MaxFrameRate
+	}
+	return 0
+}
+
+func (x *VideoProperties) GetDurationMs() int64 {
+	if x != nil {
+		return x.DurationMs
+	}
+	return 0
+}
+
+type CreateVideoRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Title     string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	AccountId int64  `protobuf:"varint,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+}
+
+func (x *CreateVideoRequest) Reset() {
+	*x = CreateVideoRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateVideoRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateVideoRequest) ProtoMessage() {}
+
+func (x *CreateVideoRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateVideoRequest.ProtoReflect.Descriptor instead.
+func (*CreateVideoRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *CreateVideoRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CreateVideoRequest) GetAccountId() int64 {
+	if x != nil {
+		return x.AccountId
+	}
+	return 0
+}
+
+type CreateVideoResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	VideoId string `protobuf:"bytes,1,opt,name=video_id,json=videoId,proto3" json:"video_id,omitempty"`
+}
+
+func (x *CreateVideoResponse) Reset() {
+	*x = CreateVideoResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateVideoResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateVideoResponse) ProtoMessage() {}
+
+func (x *CreateVideoResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateVideoResponse.ProtoReflect.Descriptor instead.
+func (*CreateVideoResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CreateVideoResponse) GetVideoId() string {
+	if x != nil {
+		return x.VideoId
+	}
+	return ""
 }
 
 type GetVideoRequest struct {
@@ -266,7 +567,7 @@ type GetVideoRequest struct {
 func (x *GetVideoRequest) Reset() {
 	*x = GetVideoRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_proto_msgTypes[3]
+		mi := &file_api_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -279,7 +580,7 @@ func (x *GetVideoRequest) String() string {
 func (*GetVideoRequest) ProtoMessage() {}
 
 func (x *GetVideoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_msgTypes[3]
+	mi := &file_api_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -292,7 +593,7 @@ func (x *GetVideoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetVideoRequest.ProtoReflect.Descriptor instead.
 func (*GetVideoRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_rawDescGZIP(), []int{3}
+	return file_api_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetVideoRequest) GetVideoId() string {
@@ -313,7 +614,7 @@ type GetVideoResponse struct {
 func (x *GetVideoResponse) Reset() {
 	*x = GetVideoResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_proto_msgTypes[4]
+		mi := &file_api_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -326,7 +627,7 @@ func (x *GetVideoResponse) String() string {
 func (*GetVideoResponse) ProtoMessage() {}
 
 func (x *GetVideoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_msgTypes[4]
+	mi := &file_api_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -339,7 +640,7 @@ func (x *GetVideoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetVideoResponse.ProtoReflect.Descriptor instead.
 func (*GetVideoResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_rawDescGZIP(), []int{4}
+	return file_api_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetVideoResponse) GetVideo() *Video {
@@ -349,49 +650,329 @@ func (x *GetVideoResponse) GetVideo() *Video {
 	return nil
 }
 
+type GetVideosByAccountRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	AccountId int64 `protobuf:"varint,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+}
+
+func (x *GetVideosByAccountRequest) Reset() {
+	*x = GetVideosByAccountRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetVideosByAccountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetVideosByAccountRequest) ProtoMessage() {}
+
+func (x *GetVideosByAccountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetVideosByAccountRequest.ProtoReflect.Descriptor instead.
+func (*GetVideosByAccountRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetVideosByAccountRequest) GetAccountId() int64 {
+	if x != nil {
+		return x.AccountId
+	}
+	return 0
+}
+
+type GetVideosByAccountResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Videos []*Video `protobuf:"bytes,1,rep,name=videos,proto3" json:"videos,omitempty"`
+}
+
+func (x *GetVideosByAccountResponse) Reset() {
+	*x = GetVideosByAccountResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetVideosByAccountResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetVideosByAccountResponse) ProtoMessage() {}
+
+func (x *GetVideosByAccountResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetVideosByAccountResponse.ProtoReflect.Descriptor instead.
+func (*GetVideosByAccountResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *GetVideosByAccountResponse) GetVideos() []*Video {
+	if x != nil {
+		return x.Videos
+	}
+	return nil
+}
+
+type CreatePlaybackRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	VideoId   string         `protobuf:"bytes,1,opt,name=video_id,json=videoId,proto3" json:"video_id,omitempty"`
+	VideoPath string         `protobuf:"bytes,2,opt,name=video_path,json=videoPath,proto3" json:"video_path,omitempty"`
+	Policy    PlaybackPolicy `protobuf:"varint,3,opt,name=policy,proto3,enum=PlaybackPolicy" json:"policy,omitempty"`
+}
+
+func (x *CreatePlaybackRequest) Reset() {
+	*x = CreatePlaybackRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreatePlaybackRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreatePlaybackRequest) ProtoMessage() {}
+
+func (x *CreatePlaybackRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreatePlaybackRequest.ProtoReflect.Descriptor instead.
+func (*CreatePlaybackRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *CreatePlaybackRequest) GetVideoId() string {
+	if x != nil {
+		return x.VideoId
+	}
+	return ""
+}
+
+func (x *CreatePlaybackRequest) GetVideoPath() string {
+	if x != nil {
+		return x.VideoPath
+	}
+	return ""
+}
+
+func (x *CreatePlaybackRequest) GetPolicy() PlaybackPolicy {
+	if x != nil {
+		return x.Policy
+	}
+	return PlaybackPolicy_PUBLIC
+}
+
+type CreatePlaybackResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PlaybackId string `protobuf:"bytes,1,opt,name=playback_id,json=playbackId,proto3" json:"playback_id,omitempty"`
+}
+
+func (x *CreatePlaybackResponse) Reset() {
+	*x = CreatePlaybackResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreatePlaybackResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreatePlaybackResponse) ProtoMessage() {}
+
+func (x *CreatePlaybackResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreatePlaybackResponse.ProtoReflect.Descriptor instead.
+func (*CreatePlaybackResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *CreatePlaybackResponse) GetPlaybackId() string {
+	if x != nil {
+		return x.PlaybackId
+	}
+	return ""
+}
+
 var File_api_proto protoreflect.FileDescriptor
 
 var file_api_proto_rawDesc = []byte{
-	0x0a, 0x09, 0x61, 0x70, 0x69, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xf7, 0x01, 0x0a, 0x05,
-	0x56, 0x69, 0x64, 0x65, 0x6f, 0x12, 0x19, 0x0a, 0x08, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x5f, 0x69,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x49, 0x64,
-	0x12, 0x14, 0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e,
-	0x74, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x61, 0x63, 0x63, 0x6f,
-	0x75, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x2c, 0x0a, 0x0b, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x5f, 0x73,
-	0x74, 0x61, 0x74, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x0b, 0x2e, 0x56, 0x69, 0x64,
-	0x65, 0x6f, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52, 0x0a, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x53, 0x74,
-	0x61, 0x74, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x66, 0x69, 0x6c, 0x65, 0x70, 0x61, 0x74, 0x68, 0x18,
-	0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x66, 0x69, 0x6c, 0x65, 0x70, 0x61, 0x74, 0x68, 0x12,
-	0x29, 0x0a, 0x10, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74,
-	0x61, 0x6d, 0x70, 0x18, 0x06, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0f, 0x63, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x29, 0x0a, 0x10, 0x75, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x07,
-	0x20, 0x01, 0x28, 0x03, 0x52, 0x0f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65,
-	0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0x2a, 0x0a, 0x12, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x56,
-	0x69, 0x64, 0x65, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74,
-	0x69, 0x74, 0x6c, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x69, 0x74, 0x6c,
-	0x65, 0x22, 0x15, 0x0a, 0x13, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x56, 0x69, 0x64, 0x65, 0x6f,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2c, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x56,
-	0x69, 0x64, 0x65, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x76,
-	0x69, 0x64, 0x65, 0x6f, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x76,
-	0x69, 0x64, 0x65, 0x6f, 0x49, 0x64, 0x22, 0x30, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64,
-	0x65, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1c, 0x0a, 0x05, 0x76, 0x69,
-	0x64, 0x65, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x06, 0x2e, 0x56, 0x69, 0x64, 0x65,
-	0x6f, 0x52, 0x05, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x2a, 0x27, 0x0a, 0x0a, 0x56, 0x69, 0x64, 0x65,
-	0x6f, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x0e, 0x0a, 0x0a, 0x50, 0x52, 0x4f, 0x43, 0x45, 0x53,
-	0x53, 0x49, 0x4e, 0x47, 0x10, 0x00, 0x12, 0x09, 0x0a, 0x05, 0x52, 0x45, 0x41, 0x44, 0x59, 0x10,
-	0x01, 0x32, 0x79, 0x0a, 0x08, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x41, 0x50, 0x49, 0x12, 0x3a, 0x0a,
-	0x0b, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x12, 0x13, 0x2e, 0x55,
-	0x70, 0x6c, 0x6f, 0x61, 0x64, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x14, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x31, 0x0a, 0x08, 0x47, 0x65, 0x74,
-	0x56, 0x69, 0x64, 0x65, 0x6f, 0x12, 0x10, 0x2e, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64, 0x65, 0x6f,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x11, 0x2e, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64,
-	0x65, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x1b, 0x5a, 0x19,
-	0x76, 0x69, 0x64, 0x65, 0x6f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x76, 0x69, 0x64, 0x65, 0x6f,
-	0x73, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x0a, 0x09, 0x61, 0x70, 0x69, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xec, 0x02, 0x0a,
+	0x05, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x12, 0x19, 0x0a, 0x08, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x5f,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x49,
+	0x64, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x61, 0x63, 0x63, 0x6f, 0x75,
+	0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x61, 0x63, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x2c, 0x0a, 0x0b, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x5f,
+	0x73, 0x74, 0x61, 0x74, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x0b, 0x2e, 0x56, 0x69,
+	0x64, 0x65, 0x6f, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52, 0x0a, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x53,
+	0x74, 0x61, 0x74, 0x65, 0x12, 0x3b, 0x0a, 0x10, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x5f, 0x70, 0x72,
+	0x6f, 0x70, 0x65, 0x72, 0x74, 0x69, 0x65, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10,
+	0x2e, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x50, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x69, 0x65, 0x73,
+	0x52, 0x0f, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x50, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x69, 0x65,
+	0x73, 0x12, 0x1a, 0x0a, 0x08, 0x66, 0x69, 0x6c, 0x65, 0x70, 0x61, 0x74, 0x68, 0x18, 0x06, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x08, 0x66, 0x69, 0x6c, 0x65, 0x70, 0x61, 0x74, 0x68, 0x12, 0x45, 0x0a,
+	0x10, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
+	0x70, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
+	0x61, 0x6d, 0x70, 0x52, 0x0f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x73,
+	0x74, 0x61, 0x6d, 0x70, 0x12, 0x45, 0x0a, 0x10, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x74,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0f, 0x75, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0x6f, 0x0a, 0x08, 0x50,
+	0x6c, 0x61, 0x79, 0x62, 0x61, 0x63, 0x6b, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6c, 0x61, 0x79, 0x62,
+	0x61, 0x63, 0x6b, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x6c,
+	0x61, 0x79, 0x62, 0x61, 0x63, 0x6b, 0x49, 0x64, 0x12, 0x19, 0x0a, 0x08, 0x76, 0x69, 0x64, 0x65,
+	0x6f, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x76, 0x69, 0x64, 0x65,
+	0x6f, 0x49, 0x64, 0x12, 0x27, 0x0a, 0x06, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x0f, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x62, 0x61, 0x63, 0x6b, 0x50, 0x6f,
+	0x6c, 0x69, 0x63, 0x79, 0x52, 0x06, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x22, 0x82, 0x02, 0x0a,
+	0x07, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x61, 0x63, 0x63, 0x6f,
+	0x75, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x61, 0x63,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x66, 0x69, 0x72, 0x73, 0x74,
+	0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x66, 0x69, 0x72,
+	0x73, 0x74, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x6e,
+	0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6c, 0x61, 0x73, 0x74, 0x4e,
+	0x61, 0x6d, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x12, 0x27, 0x0a, 0x0f, 0x68, 0x61, 0x73,
+	0x68, 0x65, 0x64, 0x5f, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x05, 0x20, 0x01,
+	0x28, 0x0c, 0x52, 0x0e, 0x68, 0x61, 0x73, 0x68, 0x65, 0x64, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f,
+	0x72, 0x64, 0x12, 0x45, 0x0a, 0x10, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x63, 0x74,
+	0x69, 0x76, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76,
+	0x65, 0x22, 0x94, 0x01, 0x0a, 0x0f, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x50, 0x72, 0x6f, 0x70, 0x65,
+	0x72, 0x74, 0x69, 0x65, 0x73, 0x12, 0x1b, 0x0a, 0x09, 0x6d, 0x61, 0x78, 0x5f, 0x77, 0x69, 0x64,
+	0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x6d, 0x61, 0x78, 0x57, 0x69, 0x64,
+	0x74, 0x68, 0x12, 0x1d, 0x0a, 0x0a, 0x6d, 0x61, 0x78, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x6d, 0x61, 0x78, 0x48, 0x65, 0x69, 0x67, 0x68,
+	0x74, 0x12, 0x24, 0x0a, 0x0e, 0x6d, 0x61, 0x78, 0x5f, 0x66, 0x72, 0x61, 0x6d, 0x65, 0x5f, 0x72,
+	0x61, 0x74, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x6d, 0x61, 0x78, 0x46, 0x72,
+	0x61, 0x6d, 0x65, 0x52, 0x61, 0x74, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x64, 0x75, 0x72, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x5f, 0x6d, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x64, 0x75,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x73, 0x22, 0x49, 0x0a, 0x12, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14,
+	0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74,
+	0x69, 0x74, 0x6c, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x5f,
+	0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e,
+	0x74, 0x49, 0x64, 0x22, 0x30, 0x0a, 0x13, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x56, 0x69, 0x64,
+	0x65, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x19, 0x0a, 0x08, 0x76, 0x69,
+	0x64, 0x65, 0x6f, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x76, 0x69,
+	0x64, 0x65, 0x6f, 0x49, 0x64, 0x22, 0x2c, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64, 0x65,
+	0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x76, 0x69, 0x64, 0x65,
+	0x6f, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x76, 0x69, 0x64, 0x65,
+	0x6f, 0x49, 0x64, 0x22, 0x30, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1c, 0x0a, 0x05, 0x76, 0x69, 0x64, 0x65, 0x6f,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x06, 0x2e, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x52, 0x05,
+	0x76, 0x69, 0x64, 0x65, 0x6f, 0x22, 0x3a, 0x0a, 0x19, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64, 0x65,
+	0x6f, 0x73, 0x42, 0x79, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x5f, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x49,
+	0x64, 0x22, 0x3c, 0x0a, 0x1a, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x73, 0x42, 0x79,
+	0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x1e, 0x0a, 0x06, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x06, 0x2e, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x52, 0x06, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x73, 0x22,
+	0x7a, 0x0a, 0x15, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x6c, 0x61, 0x79, 0x62, 0x61, 0x63,
+	0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x76, 0x69, 0x64, 0x65,
+	0x6f, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x76, 0x69, 0x64, 0x65,
+	0x6f, 0x49, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x5f, 0x70, 0x61, 0x74,
+	0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x50, 0x61,
+	0x74, 0x68, 0x12, 0x27, 0x0a, 0x06, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x0f, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x62, 0x61, 0x63, 0x6b, 0x50, 0x6f, 0x6c,
+	0x69, 0x63, 0x79, 0x52, 0x06, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x22, 0x39, 0x0a, 0x16, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x6c, 0x61, 0x79, 0x62, 0x61, 0x63, 0x6b, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x6c, 0x61, 0x79, 0x62, 0x61, 0x63,
+	0x6b, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x6c, 0x61, 0x79,
+	0x62, 0x61, 0x63, 0x6b, 0x49, 0x64, 0x2a, 0x27, 0x0a, 0x0a, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x53,
+	0x74, 0x61, 0x74, 0x65, 0x12, 0x0e, 0x0a, 0x0a, 0x50, 0x52, 0x4f, 0x43, 0x45, 0x53, 0x53, 0x49,
+	0x4e, 0x47, 0x10, 0x00, 0x12, 0x09, 0x0a, 0x05, 0x52, 0x45, 0x41, 0x44, 0x59, 0x10, 0x01, 0x2a,
+	0x28, 0x0a, 0x0e, 0x50, 0x6c, 0x61, 0x79, 0x62, 0x61, 0x63, 0x6b, 0x50, 0x6f, 0x6c, 0x69, 0x63,
+	0x79, 0x12, 0x0a, 0x0a, 0x06, 0x50, 0x55, 0x42, 0x4c, 0x49, 0x43, 0x10, 0x00, 0x12, 0x0a, 0x0a,
+	0x06, 0x53, 0x49, 0x47, 0x4e, 0x45, 0x44, 0x10, 0x01, 0x32, 0x8f, 0x02, 0x0a, 0x08, 0x56, 0x69,
+	0x64, 0x65, 0x6f, 0x41, 0x50, 0x49, 0x12, 0x3a, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x56, 0x69, 0x64, 0x65, 0x6f, 0x12, 0x13, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x56, 0x69,
+	0x64, 0x65, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x43, 0x72, 0x65,
+	0x61, 0x74, 0x65, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x00, 0x12, 0x31, 0x0a, 0x08, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x12, 0x10,
+	0x2e, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x11, 0x2e, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x4f, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64, 0x65,
+	0x6f, 0x73, 0x42, 0x79, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x1a, 0x2e, 0x47, 0x65,
+	0x74, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x73, 0x42, 0x79, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x47, 0x65, 0x74, 0x56, 0x69, 0x64,
+	0x65, 0x6f, 0x73, 0x42, 0x79, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x43, 0x0a, 0x0e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x50, 0x6c, 0x61, 0x79, 0x62, 0x61, 0x63, 0x6b, 0x12, 0x16, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x50, 0x6c, 0x61, 0x79, 0x62, 0x61, 0x63, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x17, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x6c, 0x61, 0x79, 0x62, 0x61, 0x63,
+	0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x1b, 0x5a, 0x19, 0x76,
+	0x69, 0x64, 0x65, 0x6f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x73,
+	0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -406,28 +987,48 @@ func file_api_proto_rawDescGZIP() []byte {
 	return file_api_proto_rawDescData
 }
 
-var file_api_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_api_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_api_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_api_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_api_proto_goTypes = []interface{}{
-	(VideoState)(0),             // 0: VideoState
-	(*Video)(nil),               // 1: Video
-	(*UploadVideoRequest)(nil),  // 2: UploadVideoRequest
-	(*UploadVideoResponse)(nil), // 3: UploadVideoResponse
-	(*GetVideoRequest)(nil),     // 4: GetVideoRequest
-	(*GetVideoResponse)(nil),    // 5: GetVideoResponse
+	(VideoState)(0),                    // 0: VideoState
+	(PlaybackPolicy)(0),                // 1: PlaybackPolicy
+	(*Video)(nil),                      // 2: Video
+	(*Playback)(nil),                   // 3: Playback
+	(*Account)(nil),                    // 4: Account
+	(*VideoProperties)(nil),            // 5: VideoProperties
+	(*CreateVideoRequest)(nil),         // 6: CreateVideoRequest
+	(*CreateVideoResponse)(nil),        // 7: CreateVideoResponse
+	(*GetVideoRequest)(nil),            // 8: GetVideoRequest
+	(*GetVideoResponse)(nil),           // 9: GetVideoResponse
+	(*GetVideosByAccountRequest)(nil),  // 10: GetVideosByAccountRequest
+	(*GetVideosByAccountResponse)(nil), // 11: GetVideosByAccountResponse
+	(*CreatePlaybackRequest)(nil),      // 12: CreatePlaybackRequest
+	(*CreatePlaybackResponse)(nil),     // 13: CreatePlaybackResponse
+	(*timestamp.Timestamp)(nil),        // 14: google.protobuf.Timestamp
 }
 var file_api_proto_depIdxs = []int32{
-	0, // 0: Video.video_state:type_name -> VideoState
-	1, // 1: GetVideoResponse.video:type_name -> Video
-	2, // 2: VideoAPI.UploadVideo:input_type -> UploadVideoRequest
-	4, // 3: VideoAPI.GetVideo:input_type -> GetVideoRequest
-	3, // 4: VideoAPI.UploadVideo:output_type -> UploadVideoResponse
-	5, // 5: VideoAPI.GetVideo:output_type -> GetVideoResponse
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0,  // 0: Video.video_state:type_name -> VideoState
+	5,  // 1: Video.video_properties:type_name -> VideoProperties
+	14, // 2: Video.create_timestamp:type_name -> google.protobuf.Timestamp
+	14, // 3: Video.update_timestamp:type_name -> google.protobuf.Timestamp
+	1,  // 4: Playback.policy:type_name -> PlaybackPolicy
+	14, // 5: Account.create_timestamp:type_name -> google.protobuf.Timestamp
+	2,  // 6: GetVideoResponse.video:type_name -> Video
+	2,  // 7: GetVideosByAccountResponse.videos:type_name -> Video
+	1,  // 8: CreatePlaybackRequest.policy:type_name -> PlaybackPolicy
+	6,  // 9: VideoAPI.CreateVideo:input_type -> CreateVideoRequest
+	8,  // 10: VideoAPI.GetVideo:input_type -> GetVideoRequest
+	10, // 11: VideoAPI.GetVideosByAccount:input_type -> GetVideosByAccountRequest
+	12, // 12: VideoAPI.CreatePlayback:input_type -> CreatePlaybackRequest
+	7,  // 13: VideoAPI.CreateVideo:output_type -> CreateVideoResponse
+	9,  // 14: VideoAPI.GetVideo:output_type -> GetVideoResponse
+	11, // 15: VideoAPI.GetVideosByAccount:output_type -> GetVideosByAccountResponse
+	13, // 16: VideoAPI.CreatePlayback:output_type -> CreatePlaybackResponse
+	13, // [13:17] is the sub-list for method output_type
+	9,  // [9:13] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_api_proto_init() }
@@ -449,7 +1050,7 @@ func file_api_proto_init() {
 			}
 		}
 		file_api_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UploadVideoRequest); i {
+			switch v := v.(*Playback); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -461,7 +1062,7 @@ func file_api_proto_init() {
 			}
 		}
 		file_api_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UploadVideoResponse); i {
+			switch v := v.(*Account); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -473,7 +1074,7 @@ func file_api_proto_init() {
 			}
 		}
 		file_api_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetVideoRequest); i {
+			switch v := v.(*VideoProperties); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -485,7 +1086,91 @@ func file_api_proto_init() {
 			}
 		}
 		file_api_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateVideoRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateVideoResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetVideoRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetVideoResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetVideosByAccountRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetVideosByAccountResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreatePlaybackRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreatePlaybackResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -502,8 +1187,8 @@ func file_api_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   5,
+			NumEnums:      2,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -530,8 +1215,10 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type VideoAPIClient interface {
-	UploadVideo(ctx context.Context, in *UploadVideoRequest, opts ...grpc.CallOption) (*UploadVideoResponse, error)
+	CreateVideo(ctx context.Context, in *CreateVideoRequest, opts ...grpc.CallOption) (*CreateVideoResponse, error)
 	GetVideo(ctx context.Context, in *GetVideoRequest, opts ...grpc.CallOption) (*GetVideoResponse, error)
+	GetVideosByAccount(ctx context.Context, in *GetVideosByAccountRequest, opts ...grpc.CallOption) (*GetVideosByAccountResponse, error)
+	CreatePlayback(ctx context.Context, in *CreatePlaybackRequest, opts ...grpc.CallOption) (*CreatePlaybackResponse, error)
 }
 
 type videoAPIClient struct {
@@ -542,9 +1229,9 @@ func NewVideoAPIClient(cc grpc.ClientConnInterface) VideoAPIClient {
 	return &videoAPIClient{cc}
 }
 
-func (c *videoAPIClient) UploadVideo(ctx context.Context, in *UploadVideoRequest, opts ...grpc.CallOption) (*UploadVideoResponse, error) {
-	out := new(UploadVideoResponse)
-	err := c.cc.Invoke(ctx, "/VideoAPI/UploadVideo", in, out, opts...)
+func (c *videoAPIClient) CreateVideo(ctx context.Context, in *CreateVideoRequest, opts ...grpc.CallOption) (*CreateVideoResponse, error) {
+	out := new(CreateVideoResponse)
+	err := c.cc.Invoke(ctx, "/VideoAPI/CreateVideo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -560,41 +1247,67 @@ func (c *videoAPIClient) GetVideo(ctx context.Context, in *GetVideoRequest, opts
 	return out, nil
 }
 
+func (c *videoAPIClient) GetVideosByAccount(ctx context.Context, in *GetVideosByAccountRequest, opts ...grpc.CallOption) (*GetVideosByAccountResponse, error) {
+	out := new(GetVideosByAccountResponse)
+	err := c.cc.Invoke(ctx, "/VideoAPI/GetVideosByAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *videoAPIClient) CreatePlayback(ctx context.Context, in *CreatePlaybackRequest, opts ...grpc.CallOption) (*CreatePlaybackResponse, error) {
+	out := new(CreatePlaybackResponse)
+	err := c.cc.Invoke(ctx, "/VideoAPI/CreatePlayback", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VideoAPIServer is the server API for VideoAPI service.
 type VideoAPIServer interface {
-	UploadVideo(context.Context, *UploadVideoRequest) (*UploadVideoResponse, error)
+	CreateVideo(context.Context, *CreateVideoRequest) (*CreateVideoResponse, error)
 	GetVideo(context.Context, *GetVideoRequest) (*GetVideoResponse, error)
+	GetVideosByAccount(context.Context, *GetVideosByAccountRequest) (*GetVideosByAccountResponse, error)
+	CreatePlayback(context.Context, *CreatePlaybackRequest) (*CreatePlaybackResponse, error)
 }
 
 // UnimplementedVideoAPIServer can be embedded to have forward compatible implementations.
 type UnimplementedVideoAPIServer struct {
 }
 
-func (*UnimplementedVideoAPIServer) UploadVideo(context.Context, *UploadVideoRequest) (*UploadVideoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UploadVideo not implemented")
+func (*UnimplementedVideoAPIServer) CreateVideo(context.Context, *CreateVideoRequest) (*CreateVideoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateVideo not implemented")
 }
 func (*UnimplementedVideoAPIServer) GetVideo(context.Context, *GetVideoRequest) (*GetVideoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVideo not implemented")
+}
+func (*UnimplementedVideoAPIServer) GetVideosByAccount(context.Context, *GetVideosByAccountRequest) (*GetVideosByAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVideosByAccount not implemented")
+}
+func (*UnimplementedVideoAPIServer) CreatePlayback(context.Context, *CreatePlaybackRequest) (*CreatePlaybackResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePlayback not implemented")
 }
 
 func RegisterVideoAPIServer(s *grpc.Server, srv VideoAPIServer) {
 	s.RegisterService(&_VideoAPI_serviceDesc, srv)
 }
 
-func _VideoAPI_UploadVideo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UploadVideoRequest)
+func _VideoAPI_CreateVideo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateVideoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(VideoAPIServer).UploadVideo(ctx, in)
+		return srv.(VideoAPIServer).CreateVideo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/VideoAPI/UploadVideo",
+		FullMethod: "/VideoAPI/CreateVideo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VideoAPIServer).UploadVideo(ctx, req.(*UploadVideoRequest))
+		return srv.(VideoAPIServer).CreateVideo(ctx, req.(*CreateVideoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -617,17 +1330,61 @@ func _VideoAPI_GetVideo_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VideoAPI_GetVideosByAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetVideosByAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoAPIServer).GetVideosByAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/VideoAPI/GetVideosByAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoAPIServer).GetVideosByAccount(ctx, req.(*GetVideosByAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VideoAPI_CreatePlayback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePlaybackRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoAPIServer).CreatePlayback(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/VideoAPI/CreatePlayback",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoAPIServer).CreatePlayback(ctx, req.(*CreatePlaybackRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _VideoAPI_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "VideoAPI",
 	HandlerType: (*VideoAPIServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "UploadVideo",
-			Handler:    _VideoAPI_UploadVideo_Handler,
+			MethodName: "CreateVideo",
+			Handler:    _VideoAPI_CreateVideo_Handler,
 		},
 		{
 			MethodName: "GetVideo",
 			Handler:    _VideoAPI_GetVideo_Handler,
+		},
+		{
+			MethodName: "GetVideosByAccount",
+			Handler:    _VideoAPI_GetVideosByAccount_Handler,
+		},
+		{
+			MethodName: "CreatePlayback",
+			Handler:    _VideoAPI_CreatePlayback_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

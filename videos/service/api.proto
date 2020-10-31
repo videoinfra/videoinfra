@@ -1,16 +1,92 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "videoinfra/videos/service";
 
 service VideoAPI {
-    rpc UploadVideo(UploadVideoRequest) returns (UploadVideoResponse) {}
+    rpc CreateVideo(CreateVideoRequest) returns (CreateVideoResponse) {}
+    rpc GetVideo(GetVideoRequest) returns (GetVideoResponse) {}
+    rpc GetVideosByAccount(GetVideosByAccountRequest) returns (GetVideosByAccountResponse) {}
+    rpc CreatePlayback(CreatePlaybackRequest) returns (CreatePlaybackResponse) {}
 }
 
-message UploadVideoRequest {
+message Video {
+    string video_id = 1;
+    string title = 2;
+    int64 account_id = 3;
+    VideoState video_state = 4;
+    VideoProperties video_properties = 5;
+    string filepath = 6;
+    google.protobuf.Timestamp create_timestamp = 7;
+    google.protobuf.Timestamp update_timestamp = 8;
+}
+
+message Playback {
+    string playback_id = 1;
+    string video_id = 2;
+    PlaybackPolicy policy = 3;
+}
+
+message Account {
+    int64 account_id = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string email = 4;
+    bytes hashed_password = 5;
+    google.protobuf.Timestamp create_timestamp = 6;
+    bool active = 7;
+}
+
+enum VideoState {
+   PROCESSING = 0;
+   READY = 1;
+}
+
+enum PlaybackPolicy {
+    PUBLIC = 0;
+    SIGNED = 1;
+}
+
+message VideoProperties {
+    int64 max_width = 1;
+    int64 max_height = 2;
+    int64 max_frame_rate = 3;
+    int64 duration_ms = 4;
+}
+
+message CreateVideoRequest {
     string title = 1;
+    int64 account_id = 2;
 }
 
-message UploadVideoResponse {
+message CreateVideoResponse {
+    string video_id = 1;
+}
 
+message GetVideoRequest {
+    string video_id = 1;
+}
+
+message GetVideoResponse {
+    Video video = 1;
+}
+
+message GetVideosByAccountRequest {
+    int64 account_id = 1;
+}
+
+message GetVideosByAccountResponse {
+    repeated Video videos = 1;
+}
+
+message CreatePlaybackRequest {
+    string video_id = 1;
+    string video_path = 2;
+    PlaybackPolicy policy = 3;
+}
+
+message CreatePlaybackResponse {
+    string playback_id = 1;
 }
 

@@ -8,13 +8,10 @@ import (
 	"log"
 	"math/rand"
 	"time"
-	pb "videoinfra/ffmpeg/service/gen"
 )
 
 type FfmpegAPIServerInterface struct {
-	
-	pb.UnimplementedFfmpegAPIServer
-
+	UnimplementedFfmpegAPIServer
 }
 
 const charset = "abcdefghijklmnopqrstuvwxyz" +
@@ -35,7 +32,7 @@ func String(length int) string {
   return StringWithCharset(length, charset)
 }
 
-func (s* FfmpegAPIServerInterface) GeneratePlayback(ctx context.Context, request *pb.GeneratePlaybackRequest) (*pb.GeneratePlaybackResponse, error) {
+func (s* FfmpegAPIServerInterface) GeneratePlayback(ctx context.Context, request *GeneratePlaybackRequest) (*GeneratePlaybackResponse, error) {
 	// First create a random string.
 	generated_path_name := String(10)
 
@@ -61,5 +58,5 @@ func (s* FfmpegAPIServerInterface) GeneratePlayback(ctx context.Context, request
 	path, _ := os.Getwd()
 	m3u8_file_path := path + "/" + generated_path_name + "/240_out.m3u8"
 
-	return &pb.GeneratePlaybackResponse{OriginalVideoPath:request.VideoPath, M3U8PlaybackPath:m3u8_file_path}, nil;
+	return &GeneratePlaybackResponse{OriginalVideoPath:request.VideoPath, M3U8PlaybackPath:m3u8_file_path}, nil;
 }

@@ -7,7 +7,7 @@ import (
 	"log"
 	"google.golang.org/grpc"
 	"videoinfra/ffmpeg/service"
-	pb "videoinfra/ffmpeg/service/gen"
+	pb "videoinfra/ffmpeg/service"
 )
 
 func InitServer() *service.FfmpegAPIServerInterface {
